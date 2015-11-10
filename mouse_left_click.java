@@ -24,13 +24,13 @@ public class mouse_left_click {
 	 public static void main(String[] args) throws Exception {
 
 	 	System.out.println("AFAFDAFA");
-	            Robot robot = new Robot();
-	            // Click the first button 
-	            robot.mousePress(InputEvent.BUTTON1_MASK);
-	            robot.mouseRelease(InputEvent.BUTTON1_MASK);
+        Robot robot = new Robot();
+        // Click the first button 
+        robot.mousePress(InputEvent.BUTTON1_MASK);
+        robot.mouseRelease(InputEvent.BUTTON1_MASK);
 
-		
-				System.out.println("Stopping Server");
+
+		System.out.println("Stopping Server");
 
 	 
 	 }

@@ -14,7 +14,7 @@ var width_ratio = 0.5;
 
 var widthFactor = 0;
 
-
+window.alert("WHUT");
 window.addEventListener("load", function() {
             function onTouchPreventDefault(event) { event.preventDefault(); };
             document.addEventListener("touchmove", onTouchPreventDefault, false);
@@ -64,39 +64,39 @@ var endMillis = -1;
 
 
 
-function Pressed_Down(e){
-	//Start the clock to see how long it takes to release
-		//
-	var StartDate = new Date()
-	StartMillis = StartDate.getTime();
+// function Pressed_Down(e){
+// 	//Start the clock to see how long it takes to release
+// 		//
+// 	var StartDate = new Date();
+// 	StartMillis = StartDate.getTime();
 
-	is_pressed = true;
+// 	is_pressed = true;
 
-	while(is_presseds){
-		set_timout for delay between polls
+// 	while(is_presseds){
+// 		set_timout for delay between polls
 
-		window.setInterval(Poll_Pressed(e), 1000)
+// 		window.setInterval(Poll_Pressed(e), 1000)
 
-	}
-}
+// 	}
+// }
 
-function Poll_Pressed(e){
-	if(is_pressed){
-		GetCoordinates(e)
-		return true;
-	}
-}
+// function Poll_Pressed(e){
+// 	if(is_pressed){
+// 		GetCoordinates(e)
+// 		return true;
+// 	}
+// }
 
 
-function Released(e){
-	var endDate = new Date();
-	endMillis = endDate.getTime();
+// function Released(e){
+// 	var endDate = new Date();
+// 	endMillis = endDate.getTime();
 
-	is_pressed = false;
+// 	is_pressed = false;
 
 	
 
-}
+// }
 
 
 /*
@@ -151,16 +151,132 @@ function Poll_Movement(e){
 
 
 
+var clicked_once_timer_on = false;
+
+var clicked_twice_timer_on = false;
+var clicked_three_timer_on = false;
+
+var first_click_timeout_function = null;
+var second_click_timeout_function = null;
+var third_click_timeout_function = null;
+
+function Screen_Click(e) {
+	//check to see if is a timer on, then set the timeout function
+	var click_coords = GetCoordinates(e);
+
+	if (clicked_once_timer_on == false) {
+		//if not clicked then set the timeout
+		clicked_once_timer_on = true;
+		first_click_timeout_function = setTimeout(function(){ Clicked_Once_Timeout(click_coords) }, 500);
+	}
+	else{
+		//if is already clicked within timeout, clear the single click and set double click, leave the single indicated
+		clearTimeout(first_click_timeout_function);
+
+		if(clicked_twice_timer_on == false) {
+			clicked_twice_timer_on = true;
+			second_click_timeout_function = setTimeout(function(){ Clicked_Twice_Timeout(click_coords) }, 500);
+		}
+		
+		else {
+			clearTimeout(second_click_timeout_function);
+			if(clicked_three_timer_on == true) {
+				third_click_timeout_function = setTimeout(function(){ Clicked_Three_Timeout(click_coords)}, 500);
+			}
+			else{
+				clicked_three_timer_on = true;
+				clearTimeout(third_click_timeout_function);
+				third_click_timeout_function = setTimeout(function(){ Clicked_Three_Timeout(click_coords) }, 500);
+			}
+		}
+	}
+}
+
+function Clicked_Once_Timeout(the_coords) {
+	//if the timeout occurs without interupt, then set the cursor to coords
+	clicked_once_timer = false;
+	Send_Coords(the_coords);
+}
+
+
+function Clicked_Twice_Timeout(the_coords) {
+	//if the timeout occurs without interupt, then set cursor to coords and click
+	clicked_twice_timer = false;
+	clicked_once_timer = false;
+	Send_Coords_Click(the_coords);
+}
+
+function Clicked_Three_Timeout(the_coords) {
+	//if the timeout occurs without interupt, then set cursor to coords and double click
+	clicked_three_timer = false;
+	clicked_twice_timer = false;
+	clicked_once_timer = false;
+	Send_Coords_Double_Click(the_coords);
+}
 
 
 
+
+function On_Screen_Pressed(coords) {
+
+}
+
+function On_Screen_Up(corrds) {
+
+}
+
+
+function Send_Coords(coords) {
+//send the coordinate pair back to display
+	var finalWidth = Math.floor(coords[1]*widthFactor);
+	var finalHeight = Math.floor(coords[2]*widthFactor);
+
+	//window.alert(widthFactor);
+	var coordsString = finalWidth + '|||' + finalHeight;
+	var xhttp = new XMLHttpRequest();
+
+	var requestString = "move_mouse?coordsString=" + coordsString;
+
+	xhttp.open("GET", requestString, true);
+  	xhttp.send();
+}
+
+function Send_Coords_Click(coords) {
+//send the coordinate pair back to display
+	var finalWidth = Math.floor(coords[1]*widthFactor);
+	var finalHeight = Math.floor(coords[2]*widthFactor);
+
+	//window.alert(widthFactor);
+	var coordsString = finalWidth + '|||' + finalHeight;
+	var xhttp = new XMLHttpRequest();
+
+	var requestString = "click_mouse?coordsString=" + coordsString;
+
+	xhttp.open("GET", requestString, true);
+  	xhttp.send();
+}
+
+function Send_Coords_Double_Click(coords) {
+//send the coordinate pair back to display
+	var finalWidth = Math.floor(coords[1]*widthFactor);
+	var finalHeight = Math.floor(coords[2]*widthFactor);
+
+	//window.alert(widthFactor);
+	var coordsString = finalWidth + '|||' + finalHeight;
+	var xhttp = new XMLHttpRequest();
+
+	var requestString = "double_click_mouse?coordsString=" + coordsString;
+
+	xhttp.open("GET", requestString, true);
+  	xhttp.send();
+}
 
 
 
 var CONTROL_FRAME = document.getElementById('CONTROL_FRAME');
 
 
-CONTROL_FRAME.onmousedown = Pressed_Down;
+CONTROL_FRAME.onmousedown = DISPLAY_MOUSEDOWN;
 CONTROL_FRAME.onmouseup = mouseupFunction;
 
 
